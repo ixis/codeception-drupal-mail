@@ -1,0 +1,18 @@
+{
+  "name": "ixisandyr/codeception-drupal-mail",
+  "description": "A Codeception module to provide Drupal mail system testing support.",
+  "authors": [
+    {
+      "name": "Andy Rigby",
+      "email": "andy.rigby@ixis.co.uk"
+    }
+  ],
+  "require": {
+    "ixisandyr/codeception-drupal-variable": "*@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "Codeception\\Module\\": "src/"
+    }
+  }
+}
