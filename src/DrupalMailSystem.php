@@ -6,7 +6,16 @@ use Codeception\TestCase;
 
 class DrupalMailSystem extends \Codeception\Module
 {
+    /**
+     * @var array
+     *   Array of required config fields.
+     */
     protected $requiredFields = array('enabled');
+
+    /**
+     * @var string
+     *   The previous email system in use.
+     */
     protected $previous_mail_system;
 
     /**
@@ -16,9 +25,17 @@ class DrupalMailSystem extends \Codeception\Module
     protected $preserve_emails = false;
 
     /**
+     * @var DrupalVariable
+     */
+    protected $variable_module;
+
+    /**
      * Store the current mail system.
      *
      * @param array $settings
+     *
+     * @throws ModuleConfig
+     *   If DrupalVariable module is not enabled.
      */
     public function _beforeSuite($settings = array())
     {
@@ -28,6 +45,8 @@ class DrupalMailSystem extends \Codeception\Module
               "DrupalMailSystem requires DrupalVariable module."
           );
         }
+
+        $this->variable_module = $this->getModule("DrupalVariable");
 
         if ($this->config['enabled']) {
             $this->previous_mail_system = $this->enableTestingMailSystem();
@@ -66,15 +85,16 @@ class DrupalMailSystem extends \Codeception\Module
      */
     protected function enableTestingMailSystem()
     {
-        $system = $this->getModule("DrupalVariable")->getVariable("mail_system");
+        $system = $this->variable_module->getVariable("mail_system");
         if (!$system) {
             $system = array('default-system' => 'DefaultMailSystem');
         }
 
         $test_system = array('default-system' => 'TestingMailSystem');
 
-        $this->getModule("DrupalVariable")
+        $this->variable_module
             ->haveVariable("mail_system", $test_system);
+
         $this->clearSentEmails();
 
         return $system;
@@ -89,7 +109,7 @@ class DrupalMailSystem extends \Codeception\Module
             throw new \LogicException("previous_mail_system has not been set yet.");
         }
 
-        $this->getModule("DrupalVariable")
+        $this->variable_module
             ->haveVariable("mail_system", $this->previous_mail_system);
     }
 
@@ -100,7 +120,7 @@ class DrupalMailSystem extends \Codeception\Module
      */
     public function clearSentEmails()
     {
-        $this->getModule("DrupalVariable")
+        $this->variable_module
           ->dontHaveVariable('drupal_test_email_collector');
     }
 
@@ -112,7 +132,7 @@ class DrupalMailSystem extends \Codeception\Module
      */
     public function grabSentEmails()
     {
-        return $this->getModule("DrupalVariable")
+        return $this->variable_module
           ->getVariable("drupal_test_email_collector", array());
     }
 
@@ -143,12 +163,15 @@ class DrupalMailSystem extends \Codeception\Module
     }
 
     /**
-     * Match and email with with properties matching all criteria.
+     * Match an email where properties match all criteria.
      *
      * @param array $criteria
      *   Key => value array, where key is the array key of a message array as
      *   described in hook_mail_alter() and value is the substring to search for. e.g.
      *   array("to" => "user@example.com", "body" => "hello world").
+     *
+     * @return array
+     *   Array compatible with assert/assertNot.
      */
     protected function proceedSeeSentEmail(array $criteria)
     {
