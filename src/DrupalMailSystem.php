@@ -16,18 +16,18 @@ class DrupalMailSystem extends \Codeception\Module
      * @var string
      *   The previous email system in use.
      */
-    protected $previous_mail_system;
+    protected $previousMailSystem;
 
     /**
      * @var bool
      *   If true, emails will not be cleared in _before().
      */
-    protected $preserve_emails = false;
+    protected $preserveEmails = false;
 
     /**
      * @var DrupalVariable
      */
-    protected $variable_module;
+    protected $variableModule;
 
     /**
      * Store the current mail system.
@@ -40,16 +40,16 @@ class DrupalMailSystem extends \Codeception\Module
     public function _beforeSuite($settings = array())
     {
         if (!$this->hasModule("DrupalVariable")) {
-          throw new ModuleConfig(
-              "DrupalMailSystem",
-              "DrupalMailSystem requires DrupalVariable module."
-          );
+            throw new ModuleConfig(
+                "DrupalMailSystem",
+                "DrupalMailSystem requires DrupalVariable module."
+            );
         }
 
-        $this->variable_module = $this->getModule("DrupalVariable");
+        $this->variableModule = $this->getModule("DrupalVariable");
 
         if ($this->config['enabled']) {
-            $this->previous_mail_system = $this->enableTestingMailSystem();
+            $this->previousMailSystem = $this->enableTestingMailSystem();
         }
     }
 
@@ -69,11 +69,11 @@ class DrupalMailSystem extends \Codeception\Module
     public function _before(TestCase $test)
     {
         if ($this->config['enabled']) {
-            if (!$this->preserve_emails) {
+            if (!$this->preserveEmails) {
                 $this->clearSentEmails();
             }
 
-            $this->previous_emails = false;
+            $this->preserveEmails = false;
         }
     }
 
@@ -85,14 +85,14 @@ class DrupalMailSystem extends \Codeception\Module
      */
     protected function enableTestingMailSystem()
     {
-        $system = $this->variable_module->getVariable("mail_system");
+        $system = $this->variableModule->getVariable("mail_system");
         if (!$system) {
             $system = array('default-system' => 'DefaultMailSystem');
         }
 
         $test_system = array('default-system' => 'TestingMailSystem');
 
-        $this->variable_module
+        $this->variableModule
             ->haveVariable("mail_system", $test_system);
 
         $this->clearSentEmails();
@@ -105,12 +105,12 @@ class DrupalMailSystem extends \Codeception\Module
      */
     protected function restoreMailSystem()
     {
-        if (empty($this->previous_mail_system)) {
+        if (empty($this->previousMailSystem)) {
             throw new \LogicException("previous_mail_system has not been set yet.");
         }
 
-        $this->variable_module
-            ->haveVariable("mail_system", $this->previous_mail_system);
+        $this->variableModule
+            ->haveVariable("mail_system", $this->previousMailSystem);
     }
 
     /**
@@ -120,7 +120,7 @@ class DrupalMailSystem extends \Codeception\Module
      */
     public function clearSentEmails()
     {
-        $this->variable_module
+        $this->variableModule
           ->dontHaveVariable('drupal_test_email_collector');
     }
 
@@ -132,7 +132,7 @@ class DrupalMailSystem extends \Codeception\Module
      */
     public function grabSentEmails()
     {
-        return $this->variable_module
+        return $this->variableModule
           ->getVariable("drupal_test_email_collector", array());
     }
 
@@ -239,6 +239,6 @@ class DrupalMailSystem extends \Codeception\Module
      */
     public function preserveEmails()
     {
-        $this->preserve_emails = true;
+        $this->preserveEmails = true;
     }
 }
