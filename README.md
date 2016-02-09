@@ -31,7 +31,7 @@ Install using composer:
 
 ```
 "require": {
-     "ixis/codeception-drupal-mail": "dev-develop"
+     "ixis/codeception-drupal-mail": "~0.2"
    }
 ```
 #Configure
