@@ -23,28 +23,16 @@ which stores the emails in a drupal variable.
 #Requirements
 
 * Drupal 7
-* DrupalVariable codeception module.
+* The [DrupalVariable](https://github.com/ixis/codeception-drupal-variable) codeception module.
 
 #Install
 
-Install using composer, using git repository (for now).
+Install using composer:
 
 ```
-"repositories": [
-      {
-          "type": "vcs",
-          "url": "git@bitbucket.org:dopey/codeception-drupal-mail-system.git"
-      },
-      {
-          "type": "vcs",
-          "url": "git@bitbucket.org:dopey/codeception-drupal-variable.git"
-      },
-],
-
 "require": {
-     "ixisandyr/codeception-drupal-mail": "@dev",
-     "ixisandyr/codeception-drupal-variable": "@dev",
-   },
+     "ixis/codeception-drupal-mail": "dev-develop"
+   }
 ```
 #Configure
 
@@ -57,6 +45,11 @@ modules:
         - DrupalMailSystem
         - DrupalVariable
 ```
+
+DrupalVariable is required to read the variable that is used to temporarily
+store the email content.
+
+To configure DrupalVariable see the [ReadMe](https://github.com/ixis/codeception-drupal-variable/blob/master/README.md)
 
 ##Module configuration
 
