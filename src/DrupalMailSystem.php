@@ -178,7 +178,7 @@ class DrupalMailSystem extends \Codeception\Module
         $emails = $this->grabSentEmails();
 
         $found = false;
-        foreach ($emails as $email) {
+        foreach ((array) $emails as $email) {
             $matched = 0;
             foreach ($criteria as $key => $search) {
                 if (strpos($email[$key], $search) !== false) {
